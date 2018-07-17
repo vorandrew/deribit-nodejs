@@ -62,6 +62,12 @@ Wait for connection
 await ws.connected
 ```
 
+Disconnect when done
+
+```js
+ws.disconnect()
+```
+
 ## Event hooks
 
 Filters and events (see https://www.deribit.com/main#/pages/docs/api -> WebSocket API -> Subscribe)
