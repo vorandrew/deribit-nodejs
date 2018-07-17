@@ -7,7 +7,7 @@ import { privateMethods, postMethods, sig, serialize } from './common'
 let debug = Debug('deribit:api:rest')
 
 class Rest {
-  constructor(key, secret, testnet = false, timeout = 500, keepAlive = true) {
+  constructor(key, secret, testnet = false, timeout = 1000, keepAlive = true) {
     this.key = key ? key : process.env.DERIBIT_KEY
     this.secret = secret ? secret : process.env.DERIBIT_SECRET
 
