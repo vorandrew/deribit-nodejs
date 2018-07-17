@@ -1,0 +1,107 @@
+{
+  "name": "deribit-ws-js",
+  "version": "1.0.0",
+  "description": "Deribit.com JS API with WebSocket support",
+  "main": "./lib/index.js",
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "rm -rf ./lib",
+    "build": "babel src -d lib",
+    "postinstall": "yarn build",
+    "test": "jest src --forceExit --silent -i -b",
+    "tdd": "DEBUG=deribit:api:* jest src --watch -i",
+    "lint": "eslint src",
+    "precommit": "yarn lint",
+    "prepush": "yarn test"
+  },
+  "jest": {
+    "roots": [
+      "src"
+    ],
+    "testEnvironment": "node"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:jest/recommended"
+    ],
+    "parser": "babel-eslint",
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "allowImportExportEverywhere": false,
+      "codeFrame": false,
+      "impliedStrict": true
+    },
+    "globals": {
+      "use": true
+    },
+    "plugins": [
+      "jest"
+    ],
+    "rules": {
+      "comma-dangle": [
+        "error",
+        "always-multiline"
+      ],
+      "indent": [
+        "error",
+        2
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "never"
+      ]
+    }
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-object-rest-spread",
+      [
+        "transform-runtime",
+        {
+          "polyfill": false,
+          "regenerator": true
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-runtime": "^6.26.0",
+    "debug": "^3.1.0",
+    "ws": "^5.2.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.1",
+    "babel-jest": "^22.2.2",
+    "dotenv": "^6.0.0",
+    "eslint": "^4.19.1",
+    "eslint-plugin-jest": "^21.8.0",
+    "husky": "^0.14.3",
+    "jest": "^22.2.2"
+  },
+  "repository": "git@github.com:santacruz123/deribit-ws-js.git",
+  "author": "Andrey Vorobyov <vorandrew@gmail.com>"
+}
