@@ -22,7 +22,7 @@ DERIBIT_SECRET=secret_here  // API Secret
 Import
 
 ```js
-import { DeribitREST, DeribitWS } from 'deribit-ws-js'
+import { REST, WS } from 'deribit-ws-js'
 ```
 
 # REST
@@ -30,7 +30,7 @@ import { DeribitREST, DeribitWS } from 'deribit-ws-js'
 Constructor
 
 ```js
-const rest = new DeribitRest(key, secret, testnet = false, timeout = 500, keepAlive = true)
+const rest = new REST(key, secret, testnet = false, timeout = 500, keepAlive = true)
 ```
 
 Generic API calls (case-insesitive) from https://www.deribit.com/main#/pages/docs/api
@@ -53,7 +53,7 @@ rest.Account().then(acc => console.log(acc))
 Constructor
 
 ```js
-const ws = new DeribitWS(key, secret, testnet = false)
+const ws = new WS(key, secret, testnet = false)
 ```
 
 Wait for connection
