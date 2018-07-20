@@ -81,7 +81,7 @@ export default class WS {
 
   subscribe(event = 'order_book', instrument = 'all') {
     let msg = {
-      id: 'subscribe',
+      id: new Date().getTime(),
       action: '/api/v1/private/subscribe',
       arguments: {
         instrument: Array.isArray(instrument) ? instrument : [instrument],
@@ -128,7 +128,7 @@ export default class WS {
 
       hooks.forEach(oneHook => {
         msgs.forEach(msg => {
-          if (!oneHook.filter.length) {
+          if (!oneHook.filter || oneHook.filter.length === 0) {
             process.nextTick(oneHook.cb, msg)
             return
           }
