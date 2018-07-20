@@ -1,6 +1,6 @@
 {
   "name": "deribit-ws-js",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Deribit.com JS API with WebSocket support",
   "main": "./lib/index.js",
   "license": "MIT",
