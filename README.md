@@ -1,5 +1,5 @@
-# deribit-ws-js
-Generic Deribit.com JS API with WebSocket support
+# deribit-nodejs
+Generic Deribit.com NodeJS API with WebSocket support
 
 
 # Install
