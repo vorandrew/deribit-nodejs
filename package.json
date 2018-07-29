@@ -1,7 +1,7 @@
 {
-  "name": "deribit-ws-js",
-  "version": "2.0.0",
-  "description": "Deribit.com JS API with WebSocket support",
+  "name": "deribit-nodejs",
+  "version": "1.0.0",
+  "description": "Deribit.com NodeJS with WebSocket support",
   "main": "./lib/index.js",
   "license": "MIT",
   "scripts": {
@@ -11,6 +11,7 @@
     "test": "jest src --forceExit --silent -i -b",
     "tdd": "DEBUG=deribit:api:* jest src --watch -i",
     "lint": "eslint src",
+    "prepare": "yarn build",
     "precommit": "yarn lint",
     "prepush": "yarn test"
   },
@@ -84,18 +85,18 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-runtime": "^6.26.0",
     "debug": "^3.1.0",
     "ws": "^5.2.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-jest": "^22.2.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-runtime": "^6.26.0",
     "dotenv": "^6.0.0",
     "eslint": "^4.19.1",
     "eslint-plugin-jest": "^21.8.0",
