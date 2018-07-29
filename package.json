@@ -7,7 +7,6 @@
   "scripts": {
     "prebuild": "rm -rf ./lib",
     "build": "babel src -d lib",
-    "postinstall": "yarn build",
     "test": "jest src --forceExit --silent -i -b",
     "tdd": "DEBUG=deribit:api:* jest src --watch -i",
     "lint": "eslint src",
