@@ -67,6 +67,10 @@ export default class WS {
       }
     })
 
+    setInterval(async () => {
+      this.ping()
+    }, 30000)
+
     this.connected = new Promise(resolve => this.ws.on('open', resolve))
   }
 
@@ -91,6 +95,10 @@ export default class WS {
 
     msg.sig = sig(msg.action, msg.arguments, this.key, this.secret)
     this.send(msg)
+  }
+
+  ping() {
+    this.send({ action: '/api/v1/public/ping' })
   }
 
   send(json) {
