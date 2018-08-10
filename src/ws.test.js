@@ -22,6 +22,16 @@ describe('ws', async () => {
       ws.disconnect()
     })
 
+    it('order_book index', async () => {
+      let ws = new WS()
+      await ws.connected
+      const cb = jest.fn(debug)
+      ws.hook('order_book', 'index', cb)
+      await delay(1000)
+      expect(cb).toBeCalled()
+      ws.disconnect()
+    })
+
     it('user_order', async () => {
       let ws = new WS()
       let rest = new Rest()

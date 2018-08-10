@@ -6,6 +6,10 @@ import { sig } from './common'
 let debug = Debug('deribit:api:ws')
 
 let wsEvents = {
+  index: {
+    hook: 'order_book',
+    filter: () => true,
+  }, // index change
   order_book_event: {
     hook: 'order_book',
     filter: (msg, filter) => {
@@ -63,7 +67,8 @@ export default class WS {
     this.ws.on('message', debug)
     this.ws.on('message', msg => {
       if (msg.includes('notifications')) {
-        this.notifications(JSON.parse(msg).notifications)
+        let ntfs = JSON.parse(msg).notifications
+        return Array.isArray(ntfs) ? this.notifications(ntfs) : this.notifications([ntfs])
       }
     })
 
@@ -88,6 +93,7 @@ export default class WS {
       id: new Date().getTime(),
       action: '/api/v1/private/subscribe',
       arguments: {
+        continue: true,
         instrument: Array.isArray(instrument) ? instrument : [instrument],
         event: Array.isArray(event) ? event : [event],
       },
