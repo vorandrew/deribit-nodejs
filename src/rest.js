@@ -1,7 +1,7 @@
 import Debug from 'debug'
-import Axios from 'axios'
+import Got from 'got'
 import https from 'https'
-import { privateMethods, postMethods, sig, serialize } from './common'
+import { privateMethods, sign } from './common'
 
 // eslint-disable-next-line no-unused-vars
 let debug = Debug('deribit:api:rest')
@@ -17,64 +17,81 @@ class Rest {
 
     debug('Connecting to testnet', testnet)
 
-    this.axios = Axios.create({
-      baseURL: testnet ? 'https://test.deribit.com' : 'https://www.deribit.com',
+    this.got = Got.extend({
+      prefixUrl: testnet ? 'https://test.deribit.com' : 'https://www.deribit.com',
       timeout,
-      httpsAgent: new https.Agent({ keepAlive }),
+      agent: {
+        https: new https.Agent({ keepAlive }),
+      },
     })
   }
 
   execute(deribitMethod, json = {}) {
     deribitMethod = deribitMethod.toString().toLowerCase()
 
-    let privacy = privateMethods.includes(deribitMethod) ? 'private' : 'public'
-    let method = postMethods.includes(deribitMethod) ? 'post' : 'get'
-    let url = `/api/v1/${privacy}/${deribitMethod}`
+    const privacy = privateMethods.includes(deribitMethod) ? 'private' : 'public'
+    const method = deribitMethod.startsWith('get_') || deribitMethod.startsWith('list_') ? 'GET' : 'POST'
+    const url = `api/v2/${privacy}/${deribitMethod}`
 
     if (method === 'post' && process.env.DERIBIT_SAFE) {
-      let err = new Error('DERIBIT_SAFE mode is ON')
+      const err = new Error('DERIBIT_SAFE mode is ON')
       err.name = 'deribit_safe'
       throw err
     }
 
-    let data = {}
-    let params = {}
+    debug({ dt: new Date(), method: deribitMethod, params: json })
 
-    method === 'get' ? (params = json) : (data = serialize(json))
-
-    debug('Method:', deribitMethod, ' Params:', json)
-
-    let opt = {
+    const opts = {
       method,
-      url,
-      data,
-      params,
+    }
+
+    if (method === 'GET') {
+      opts.searchParams = json
+    } else {
+      opts.json = { jsonrpc: '2.0', method: `${privacy}/${deribitMethod}`, params: { ...json } }
     }
 
     if (privacy === 'private') {
-      opt.headers = {
-        'x-deribit-sig': sig(url, json, this.key, this.secret),
+      opts.headers = {
+        Authorization: sign({
+          key: this.key,
+          secret: this.secret,
+          method,
+          url,
+          json: method === 'GET' ? opts.searchParams : opts.json,
+        }),
       }
     }
 
-    return this.axios(opt).then(res => {
-      if (!res.data.success) {
-        let err = new Error(res.data.message)
-        err.name = 'deribit_api'
-        throw err
-      }
+    return this.got(url, opts)
+      .json()
+      .then(res => {
+        if (!res.result) {
+          let err = new Error(res.message)
+          err.name = 'deribit_api'
+          throw err
+        }
 
-      return res.data.result
-    })
+        return res.result
+      })
+      .catch(error => {
+        debug('Deribit error', error.response.body)
+        const body = JSON.parse(error.response.body)
+        const err = new Error(body.error.message)
+        err.name = 'deribit_api'
+        err.code = body.error.code
+        err.body = body.error
+        throw err
+      })
   }
 }
 
-export default function(key, secret, livenet = false, timeout = 1000, keepAlive = true) {
+export default function (key, secret, livenet = false, timeout = 1000, keepAlive = true) {
   let rest = new Rest(key, secret, livenet, timeout, keepAlive)
 
   let handler = {
     get(_, deribitMethod) {
-      return function(json) {
+      return function (json) {
         return rest.execute(deribitMethod, json)
       }
     },

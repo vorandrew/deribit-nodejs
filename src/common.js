@@ -5,21 +5,89 @@ import Debug from 'debug'
 let debug = Debug('deribit:api:common')
 
 export let privateMethods = [
-  'account',
+  'activate_tfa',
+  'add_to_address_book',
   'buy',
   'cancel',
-  'cancelall',
+  'cancel_all',
+  'cancel_all_by_currency',
+  'cancel_all_by_instrument',
+  'cancel_by_label',
+  'cancel_transfer_by_id',
+  'cancel_withdrawal',
+  'change_api_key_name',
+  'change_password',
+  'change_scope_in_api_key',
+  'change_subaccount_name',
+  'close_position',
+  'create_api_key',
+  'create_deposit_address',
+  'create_subaccount',
+  'deactivate_tfa',
+  'disable_api_key',
+  'disable_cancel_on_disconnect',
+  'disable_tfa_for_subaccount',
+  'disable_tfa_with_recovery_code',
   'edit',
-  'getopenorders',
-  'newannouncements',
-  'orderhistory',
-  'orderstate',
-  'positions',
+  'enable_api_key',
+  'enable_cancel_on_disconnect',
+  'execute_block_trade',
+  'get_access_log',
+  'get_account_summary',
+  'get_address_book',
+  'get_block_trade',
+  'get_cancel_on_disconnect',
+  'get_current_deposit_address',
+  'get_deposits',
+  'get_email_language',
+  'get_last_block_trades_by_currency',
+  'get_margins',
+  'get_new_announcements',
+  'get_open_orders_by_currency',
+  'get_open_orders_by_instrument',
+  'get_order_history_by_currency',
+  'get_order_history_by_instrument',
+  'get_order_margin_by_ids',
+  'get_order_state',
+  'get_pme_data',
+  'get_pme_params',
+  'get_position',
+  'get_positions',
+  'get_settlement_history_by_currency',
+  'get_settlement_history_by_instrument',
+  'get_stats',
+  'get_stop_order_history',
+  'get_subaccounts',
+  'get_tfa_activation_data',
+  'get_transfers',
+  'get_user_trades_by_currency',
+  'get_user_trades_by_currency_and_time',
+  'get_user_trades_by_instrument',
+  'get_user_trades_by_instrument_and_time',
+  'get_user_trades_by_order',
+  'get_withdrawals',
+  'invalidate_block_trade_signature',
+  'list_api_keys',
+  'logout',
+  'remove_api_key',
+  'remove_from_address_book',
+  'reset_api_key',
   'sell',
-  'tradehistory',
+  'set_announcement_as_read',
+  'set_api_key_as_default',
+  'set_email_for_subaccount',
+  'set_email_language',
+  'set_password_for_subaccount',
+  'submit_transfer_to_subaccount',
+  'submit_transfer_to_user',
+  'subscribe',
+  'toggle_deposit_address_creation',
+  'toggle_notifications_from_subaccount',
+  'toggle_subaccount_login',
+  'unsubscribe',
+  'verify_block_trade',
+  'withdraw',
 ]
-
-export let postMethods = ['buy', 'sell', 'edit', 'cancelall', 'cancel']
 
 export function serialize(m) {
   return Object.keys(m)
@@ -28,33 +96,23 @@ export function serialize(m) {
     .join('&')
 }
 
-export function sig(action, obj = {}, key, sec) {
-  if (!key || !sec) {
-    let err = new Error('Deribit key/secret missing')
+export function sign({ method, url, json = {}, key, secret }) {
+  if (!key || !secret) {
+    const err = new Error('Deribit key/secret missing')
     err.name = 'deribit_auth'
     throw err
   }
 
-  let time = new Date().getTime()
+  const ts = new Date().getTime()
+  const nonce = crypto.randomBytes(15).toString('hex')
 
-  let m = Object.assign(
-    {
-      _: time,
-      _ackey: key,
-      _acsec: sec,
-      _action: action,
-    },
-    obj,
-  )
+  const body = method === 'POST' ? JSON.stringify(json) : ''
+  const qs = method === 'GET' ? '?' + serialize(json) : ''
 
-  let str = serialize(m)
+  const reqData = [ts, nonce, method, `/${url}${qs}`, body].join('\n') + '\n'
+  const sig = crypto.createHmac('sha256', secret).update(reqData).digest('hex')
 
-  let hash = crypto.createHash('sha256')
-  hash.update(str)
+  debug({ reqData, sig })
 
-  let sig = `${key}.${time}.${hash.digest('base64')}`
-
-  debug({ sig, str })
-
-  return sig
+  return `deri-hmac-sha256 id=${key},ts=${ts},nonce=${nonce},sig=${sig}`
 }

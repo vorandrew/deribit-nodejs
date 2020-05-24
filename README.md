@@ -1,11 +1,11 @@
 # deribit-nodejs
-Generic Deribit.com NodeJS API with WebSocket support
+Deribit.com v2.0.0 NodeJS REST API
 
 
 # Install
 
 ```bash
-yarn add deribit-ws-js
+yarn add deribit-nodejs
 ```
 
 # Setup
@@ -22,7 +22,7 @@ DERIBIT_SECRET=secret_here  // API Secret
 Import
 
 ```js
-import { REST, WS } from 'deribit-ws-js'
+import { REST } from 'deribit-nodejs'
 ```
 
 # REST
@@ -33,66 +33,18 @@ Constructor
 const rest = new REST(key, secret, testnet = false, timeout = 500, keepAlive = true)
 ```
 
-Generic API calls (case-insesitive) from https://www.deribit.com/main#/pages/docs/api
+Generic API calls (case-insesitive) from https://docs.deribit.com/ (https://www.deribit.com/api_console)
 
 ```js
-let res = await rest.buy({
-  instrument: 'BTC-28DEC18-15000-C',
-  quantity: 1,
+const res = await rest.buy({
+  // no need to write private/public
+  instrument: 'BTC-PERPETUAL',
+  amount: 100,
   type: 'market',
-  label: '1123123',
+  label: 'my_label',
 })
 ```
 
 ```js
-rest.Account().then(acc => console.log(acc))
-```
-
-# WebSocket
-
-Constructor
-
-```js
-const ws = new WS(key, secret, testnet = false)
-```
-
-Wait for connection
-
-```js
-await ws.connected
-```
-
-Disconnect when done
-
-```js
-ws.disconnect()
-```
-
-## Event hooks
-
-Filters and events (see https://www.deribit.com/main#/pages/docs/api -> WebSocket API -> Subscribe)
-
-```js
-let filters = ['all', 'futures', 'options', 'index', 'any_instrument_name']
-```
-```js
-let events = ['order_book', 'trade', 'user_order', 'my_trade']
-```
-
-Hooks
-
-```js
-ws.hook('my_trade', trade => console.log(trade))
-```
-
-With filter
-
-```js
-ws.hook('order_book', 'BTC-28SEP18', cb)
-```
-
-Array as filter
-
-```js
-ws.hook('trade', ['BTC-28SEP18','BTC-28DEC18'], cb)
+rest.get_account_summary().then(console.log)
 ```

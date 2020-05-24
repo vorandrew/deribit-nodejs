@@ -1,6 +1,6 @@
 {
   "name": "deribit-nodejs",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "Deribit.com NodeJS with WebSocket support",
   "main": "./lib/index.js",
   "license": "MIT",
@@ -12,7 +12,10 @@
     "lint": "eslint src",
     "prepare": "yarn build",
     "precommit": "yarn lint",
-    "prepush": "yarn test"
+    "prepush": "yarn test",
+    "preversion": "yarn test",
+    "version": "yarn build",
+    "postversion": "git push && git push --tags"
   },
   "jest": {
     "roots": [
@@ -22,86 +25,91 @@
   },
   "eslintConfig": {
     "env": {
-      "es6": true,
+      "es2020": true,
       "node": true,
       "jest": true
     },
     "extends": [
-      "eslint:recommended",
-      "plugin:jest/recommended"
+      "prettier"
     ],
-    "parser": "babel-eslint",
     "parserOptions": {
-      "ecmaVersion": 2018,
+      "ecmaVersion": 2020,
       "sourceType": "module",
       "allowImportExportEverywhere": false,
       "codeFrame": false,
       "impliedStrict": true
     },
-    "globals": {
-      "use": true
-    },
     "plugins": [
-      "jest"
+      "prettier"
     ],
     "rules": {
-      "comma-dangle": [
+      "prettier/prettier": [
         "error",
-        "always-multiline"
-      ],
-      "indent": [
-        "error",
-        2
-      ],
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "semi": [
-        "error",
-        "never"
+        {
+          "arrowParens": "avoid",
+          "semi": false,
+          "singleQuote": true,
+          "printWidth": 120,
+          "tabWidth": 2
+        }
       ]
     }
   },
   "babel": {
     "presets": [
-      "env"
-    ],
-    "plugins": [
-      "transform-object-rest-spread",
       [
-        "transform-runtime",
+        "@babel/preset-env",
         {
-          "polyfill": false,
-          "regenerator": true
+          "targets": {
+            "node": "current"
+          }
         }
       ]
     ]
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "debug": "^3.1.0",
-    "ws": "^5.2.1"
+    "debug": "^3.2.6",
+    "got": "^10.7.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.1",
-    "babel-jest": "^22.2.2",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-runtime": "^6.26.0",
-    "dotenv": "^6.0.0",
-    "eslint": "^4.19.1",
-    "eslint-plugin-jest": "^21.8.0",
-    "husky": "^0.14.3",
-    "jest": "^22.2.2"
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^26.0.1",
+    "debug": "*",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.2.3",
+    "jest": "^26.0.1",
+    "moment": "^2.24.0",
+    "nodemon": "^2.0.2",
+    "prettier": "^2.0.4"
   },
-  "repository": "git@github.com:santacruz123/deribit-ws-js.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/santacruz123/deribit-nodejs.git"
+  },
+  "private": false,
+  "bugs": {
+    "url": "https://github.com/santacruz123/deribit-nodejs/issues"
+  },
+  "homepage": "https://github.com/santacruz123/deribit-nodejs#readme",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "deribit",
+    "nodejs",
+    "v2"
+  ],
   "author": "Andrey Vorobyov <vorandrew@gmail.com>"
 }
