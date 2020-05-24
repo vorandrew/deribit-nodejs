@@ -33,7 +33,7 @@ Constructor
 const rest = new REST(key, secret, testnet = false, timeout = 500, keepAlive = true)
 ```
 
-Generic API calls (case-insesitive) from https://docs.deribit.com/ (https://www.deribit.com/api_console)
+Generic API calls (case-insesitive) from https://docs.deribit.com/ and https://www.deribit.com/api_console/
 
 ```js
 const res = await rest.buy({
