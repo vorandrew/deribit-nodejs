@@ -6,7 +6,7 @@ import Rest from './rest'
 const debug = Debug('deribit:api:rest:test')
 const rest = new Rest()
 
-describe('rest', async () => {
+describe('rest', () => {
   it('public', async () => {
     expect(await rest.test({ some: 4 })).toHaveProperty('version')
   })
@@ -21,6 +21,11 @@ describe('rest', async () => {
     let positions = await rest.get_positions({ currency: 'BTC' })
     debug(positions[0])
     expect(positions.length).toBeGreaterThan(0)
+  })
+
+  it('ticker', async () => {
+    let ticker = await rest.ticker({ instrument_name: 'BTC-PERPETUAL' })
+    expect(ticker).toHaveProperty('best_bid_price')
   })
 
   it('buy', async () => {

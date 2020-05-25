@@ -33,7 +33,7 @@ class Rest {
     const method = deribitMethod.startsWith('get_') || deribitMethod.startsWith('list_') ? 'GET' : 'POST'
     const url = `api/v2/${privacy}/${deribitMethod}`
 
-    if (method === 'post' && process.env.DERIBIT_SAFE) {
+    if (method === 'POST' && process.env.DERIBIT_SAFE) {
       const err = new Error('DERIBIT_SAFE mode is ON')
       err.name = 'deribit_safe'
       throw err
