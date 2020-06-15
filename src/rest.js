@@ -66,7 +66,7 @@ class Rest {
     return this.got(url, opts)
       .json()
       .then(res => {
-        if (!res.result) {
+        if (res.result === undefined) {
           let err = new Error(res.message)
           err.name = 'deribit_api'
           throw err
