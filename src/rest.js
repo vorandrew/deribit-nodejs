@@ -75,13 +75,17 @@ class Rest {
         return res.result
       })
       .catch(error => {
-        debug('Deribit error', error.response.body)
-        const body = JSON.parse(error.response.body)
-        const err = new Error(body.error.message)
-        err.name = 'deribit_api'
-        err.code = body.error.code
-        err.body = body.error
-        throw err
+        if (error.response && error.response.body) {
+          debug('Deribit error', error.response.body)
+          const body = JSON.parse(error.response.body)
+          const err = new Error(body.error.message)
+          err.name = 'deribit_api'
+          err.code = body.error.code
+          err.body = body.error
+          throw err
+        } else {
+          throw error
+        }
       })
   }
 }
