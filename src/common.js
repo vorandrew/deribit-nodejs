@@ -91,7 +91,6 @@ export let privateMethods = [
 
 export function serialize(m) {
   return Object.keys(m)
-    .sort()
     .map(k => (Array.isArray(m[k]) ? `${k}=${m[k].join('')}` : `${k}=${m[k]}`))
     .join('&')
 }

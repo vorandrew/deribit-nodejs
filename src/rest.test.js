@@ -11,6 +11,18 @@ describe('rest', () => {
     expect(await rest.test({ some: 4 })).toHaveProperty('version')
   })
 
+  it('get_user_trades_by_currency_and_time', async () => {
+    const res = await rest.get_user_trades_by_currency_and_time({
+      currency: 'BTC',
+      include_old: true,
+      count: 10,
+      start_timestamp: 1262350861000,
+    })
+
+    debug(res)
+    expect(res.trades.length).toBeGreaterThanOrEqual(1)
+  })
+
   it('get_subaccounts', async () => {
     const accounts = await rest.get_subaccounts({ with_portfolio: false })
     debug(accounts[0])
