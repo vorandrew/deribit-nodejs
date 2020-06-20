@@ -11,6 +11,12 @@ describe('rest', () => {
     expect(await rest.test({ some: 4 })).toHaveProperty('version')
   })
 
+  it('get_subaccounts', async () => {
+    const accounts = await rest.get_subaccounts({ with_portfolio: false })
+    debug(accounts[0])
+    expect(accounts.length).toBeGreaterThanOrEqual(1)
+  })
+
   it('getinstruments', async () => {
     const instruments = await rest.get_instruments({ currency: 'BTC' })
     debug(instruments[0])
