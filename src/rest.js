@@ -1,5 +1,5 @@
 import Debug from 'debug'
-import Got from 'got'
+import Axios from 'axios'
 import https from 'https'
 import { privateMethods, sign } from './common'
 
@@ -17,12 +17,10 @@ class Rest {
 
     debug('Connecting to testnet', testnet)
 
-    this.got = Got.extend({
-      prefixUrl: testnet ? 'https://test.deribit.com' : 'https://www.deribit.com',
+    this.client = Axios.create({
+      baseURL: testnet ? 'https://test.deribit.com' : 'https://www.deribit.com',
       timeout,
-      agent: {
-        https: new https.Agent({ keepAlive }),
-      },
+      httpsAgent: new https.Agent({ keepAlive }),
     })
   }
 
@@ -43,12 +41,13 @@ class Rest {
 
     const opts = {
       method,
+      url,
     }
 
     if (method === 'GET') {
-      opts.searchParams = json
+      opts.params = json
     } else {
-      opts.json = { jsonrpc: '2.0', method: `${privacy}/${deribitMethod}`, params: { ...json } }
+      opts.data = { jsonrpc: '2.0', method: `${privacy}/${deribitMethod}`, params: { ...json } }
     }
 
     if (privacy === 'private') {
@@ -58,42 +57,41 @@ class Rest {
           secret: this.secret,
           method,
           url,
-          json: method === 'GET' ? opts.searchParams : opts.json,
+          json: method === 'GET' ? opts.params : opts.data,
         }),
       }
     }
 
-    return this.got(url, opts)
-      .json()
+    return this.client(opts)
       .then(res => {
-        if (res.result === undefined) {
-          let err = new Error(res.message)
+        if (res.data.result === undefined) {
+          let err = new Error(res.data.message)
           err.name = 'deribit_api'
           throw err
         }
 
-        return res.result
+        return res.data.result
       })
-      .catch(error => {
-        if (error.response && error.response.body) {
-          debug('Deribit error', error.response.body)
-          const body = JSON.parse(error.response.body)
+      .catch(e => {
+        if (e.response && e.response.data) {
+          const body = e.response.data
+          debug('Deribit error', body)
           const err = new Error(body.error.message)
           err.name = 'deribit_api'
           err.code = body.error.code
           err.body = body.error
           throw err
         } else {
-          throw error
+          throw e
         }
       })
   }
 }
 
 export default function (key, secret, livenet = false, timeout = 1000, keepAlive = true) {
-  let rest = new Rest(key, secret, livenet, timeout, keepAlive)
+  const rest = new Rest(key, secret, livenet, timeout, keepAlive)
 
-  let handler = {
+  const handler = {
     get(_, deribitMethod) {
       return function (json) {
         return rest.execute(deribitMethod, json)
